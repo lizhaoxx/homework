@@ -1,0 +1,15 @@
+#
+# Normal rules
+#
+*.bak
+*.o
+USART/*
+…Ò÷€III∫≈/*
+#
+# git files that we don't want to ignore even it they are dot-files
+#
+!.gitignore
+
+#
+#  Project
+#
