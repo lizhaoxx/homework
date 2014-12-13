@@ -45,6 +45,9 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                         {"orange", &msg_orange_handler},                    \
                         {"hello", &msg_hello_handler},
                         
+#define CHECK_BYTE_QUEUE  g_tFIFOin
+#define QUEUE_TYPE       byte_queue_t    
+                        
 /*============================ MACROFIED FUNCTIONS ===========================*/
 #define SERIAL_OUT_HANDLE(__PCH)   serial_out(__PCH)
 

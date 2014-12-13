@@ -1,6 +1,6 @@
 
 #include ".\app_cfg.h"
-#include "src\CheckString\CheckString.h"
+// #include "src\CheckString\CheckString.h"
 #include "src\Port\Port.h"
 #include "src\print_string\print_string.h"
 #include "src\USART\USART1.h"
@@ -31,7 +31,7 @@ static fsm_rt_t task_b(void);
 static fsm_rt_t task_c(void);
 
 
- byte_queue_t s_tFIFOin;
+ byte_queue_t g_tFIFOin;
  byte_queue_t s_tFIFOout;
 
 static event_t s_tEventApple;
@@ -55,10 +55,10 @@ int main(void)
     INIT_EVENT(&s_tEventOrange,false,MANUAL);
     INIT_EVENT(&s_tEventWorld,false,MANUAL);
     
-    INIT_BYTE_QUEUE(&s_tFIFOin,s_tBuf, UBOUND(s_tBuf));
+    INIT_BYTE_QUEUE(&g_tFIFOin,s_tBuf, UBOUND(s_tBuf));
     INIT_BYTE_QUEUE(&s_tFIFOout,s_tPiPeBuf, UBOUND(s_tPiPeBuf));
     
-    add_dynamic_command(s_tUserMSGMap,UBOUND(s_tUserMSGMap));
+    cmd_register(s_tUserMSGMap,UBOUND(s_tUserMSGMap));
     
     while(1) {
         LEDBreath(); 
@@ -75,7 +75,7 @@ static  fsm_rt_t CheckSringUseMsgMap(void)
 {
     const msg_t *ptMsg = NULL;
 
-    if(fsm_rt_cpl == MsgMapSearch(&s_tFIFOin,&ptMsg)) {
+    if(fsm_rt_cpl == MsgMapSearch(&ptMsg)) {
         ptMsg->fnHandler(ptMsg);
     }
         
@@ -148,7 +148,7 @@ static fsm_rt_t serial_in_task(void)
             //breka;
         case SERIAL_IN_TASK_READ:
             if(serial_in(&s_chByte)){
-                ENQUEUE_BYTE(&s_tFIFOin,s_chByte);
+                ENQUEUE_BYTE(&g_tFIFOin,s_chByte);
                 SERIAL_IN_TASK_FSM_RESET();
                 return fsm_rt_cpl;
             }

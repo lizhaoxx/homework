@@ -426,11 +426,6 @@
               <FileType>1</FileType>
               <FilePath>..\src\print_string\print_string.c</FilePath>
             </File>
-            <File>
-              <FileName>CheckString.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\CheckString\CheckString.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -1214,11 +1209,6 @@
               <FileName>print_string.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\print_string\print_string.c</FilePath>
-            </File>
-            <File>
-              <FileName>CheckString.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\CheckString\CheckString.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2004,11 +1994,6 @@
               <FileType>1</FileType>
               <FilePath>..\src\print_string\print_string.c</FilePath>
             </File>
-            <File>
-              <FileName>CheckString.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\CheckString\CheckString.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -2793,11 +2778,6 @@
               <FileType>1</FileType>
               <FilePath>..\src\print_string\print_string.c</FilePath>
             </File>
-            <File>
-              <FileName>CheckString.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\CheckString\CheckString.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -3581,11 +3561,6 @@
               <FileName>print_string.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\print_string\print_string.c</FilePath>
-            </File>
-            <File>
-              <FileName>CheckString.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\CheckString\CheckString.c</FilePath>
             </File>
           </Files>
         </Group>

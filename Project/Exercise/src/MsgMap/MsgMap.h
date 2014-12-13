@@ -42,9 +42,9 @@ struct _msg_t {
 /*============================ GLOBAL VARIABLES ==============================*/
 /*============================ LOCAL VARIABLES ===============================*/
 /*============================ PROTOTYPES ====================================*/
-extern void del_dynamic_command(void);
-extern bool add_dynamic_command(msg_t * ptMsg,uint8_t chItemNum);
-extern fsm_rt_t MsgMapSearch(byte_queue_t *ptMessageQueue,const msg_t **ptSuccessMsg);
+extern void cmd_unregister(void);
+extern bool cmd_register(msg_t * ptMsg,uint8_t chItemNum);
+extern fsm_rt_t MsgMapSearch(const msg_t **ptSuccessMsg);
 
 #endif
 #endif
