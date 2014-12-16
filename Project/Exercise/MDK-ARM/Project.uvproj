@@ -456,6 +456,16 @@
               <FileType>1</FileType>
               <FilePath>..\src\MsgMap\MsgMap.c</FilePath>
             </File>
+            <File>
+              <FileName>checkstring.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\MsgMap\checkstring\checkstring.c</FilePath>
+            </File>
+            <File>
+              <FileName>mapqueue.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\mapqueue.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1239,6 +1249,16 @@
               <FileName>MsgMap.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\MsgMap\MsgMap.c</FilePath>
+            </File>
+            <File>
+              <FileName>checkstring.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\MsgMap\checkstring\checkstring.c</FilePath>
+            </File>
+            <File>
+              <FileName>mapqueue.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\mapqueue.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2024,6 +2044,16 @@
               <FileType>1</FileType>
               <FilePath>..\src\MsgMap\MsgMap.c</FilePath>
             </File>
+            <File>
+              <FileName>checkstring.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\MsgMap\checkstring\checkstring.c</FilePath>
+            </File>
+            <File>
+              <FileName>mapqueue.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\mapqueue.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2808,6 +2838,16 @@
               <FileType>1</FileType>
               <FilePath>..\src\MsgMap\MsgMap.c</FilePath>
             </File>
+            <File>
+              <FileName>checkstring.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\MsgMap\checkstring\checkstring.c</FilePath>
+            </File>
+            <File>
+              <FileName>mapqueue.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\mapqueue.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -3591,6 +3631,16 @@
               <FileName>MsgMap.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\MsgMap\MsgMap.c</FilePath>
+            </File>
+            <File>
+              <FileName>checkstring.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\MsgMap\checkstring\checkstring.c</FilePath>
+            </File>
+            <File>
+              <FileName>mapqueue.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\mapqueue.c</FilePath>
             </File>
           </Files>
         </Group>

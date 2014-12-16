@@ -20,7 +20,7 @@
 #include ".\app_cfg.h"
 
 /*============================ INCLUDES ======================================*/
-#include "..\byte_queue\byte_queue.h"
+#include ".\checkstring\checkstring.h"
 
 /*============================ MACROS ========================================*/
 #ifndef INSERT_MSG_MAP_CMD
@@ -35,24 +35,8 @@
     #error Macro CHECK_BYTE_QUEUE is not define for MsgMap.c!
 #endif
 
-#ifndef QUEUE_TYPE
-    #error Macro QUEUE_TYPE is not define for MsgMap.c!
-#endif
+extern QUEUE(MsgMapQueue)  CHECK_BYTE_QUEUE;
 
-#define DEQUEUE_BYTE(__QUEUE, __OBJ)                                        \
-            dequeue((__QUEUE),(__OBJ))
-  
-#define PEEK_BYTE_QUEUE(__QUEUE, __DATA)                                    \
-            peek_byte_queue((__QUEUE),(__DATA))  
-                              
-#define RESET_PEEK_BYTE(__QUEUE)                                            \
-            reset_peek_byte(__QUEUE)
-            
-#define GET_ALL_PEEKED_BYTE(__QUEUE)                                        \
-            get_all_peek_byte(__QUEUE)
-
-extern QUEUE_TYPE  CHECK_BYTE_QUEUE;
-    
 /*============================ MACROFIED FUNCTIONS ===========================*/
 /*============================ TYPES =========================================*/
 typedef struct _msg_t msg_t;
@@ -69,16 +53,6 @@ struct _DynaMsg_t {
     msg_t           *ptMsgPtr;
 };
 
-typedef struct{
-    enum {
-        CHECK_STR_START = 0,
-        CHECK_SRT_CHECK
-    }tState;
-    uint8_t* pchSTR;
-    uint8_t* pchIndex;
-    byte_queue_t* ptQueue; 
-}check_str_t;
- 
 /*============================ GLOBAL VARIABLES ==============================*/
 /*============================ LOCAL VARIABLES ===============================*/
 INSERT_MSG_MAP_FUNC_EXRERN
@@ -93,8 +67,6 @@ static DynaMsg_t s_tDynaMsgConfig = {
 
 /*============================ PROTOTYPES ====================================*/
 static fsm_rt_t CheckEngine(const msg_t *ptMSG,bool* pbIsCheckFail);
-static bool init_CHK_string(check_str_t *ptCHK,uint8_t* pchStr,byte_queue_t* ptQueue);
-static fsm_rt_t check_string(check_str_t *ptCHK, bool *pbIsRequestDrop);
 
 
 /*! \brief add user msg 
@@ -167,7 +139,7 @@ fsm_rt_t MsgMapSearch(const msg_t **ptSuccessMsg)
                 s_chMsgIndex   = 0, 
                 s_tState = TASK_CHECK_USE_PEEK_USER_SEARCH;
             } else {
-                DEQUEUE_BYTE(&CHECK_BYTE_QUEUE,&chByte);
+                DEQUEUE(MsgMapQueue,&CHECK_BYTE_QUEUE,&chByte);
                 s_chMsgIndex = 0;
             }
             break;
@@ -175,12 +147,12 @@ fsm_rt_t MsgMapSearch(const msg_t **ptSuccessMsg)
         case TASK_CHECK_USE_PEEK_CHK_STR:
             tRes = CheckEngine(c_ptMsg,&bIsCheckFail);
             if(tRes == fsm_rt_cpl) {
-                GET_ALL_PEEKED_BYTE(&CHECK_BYTE_QUEUE);
+                GET_ALL_PEEK(MsgMapQueue,&CHECK_BYTE_QUEUE);
                 *ptSuccessMsg = c_ptMsg;
                 TASK_CHECK_USE_PEEK_FSM_RESET();
                 return fsm_rt_cpl;
             } else if (bIsCheckFail) {
-                RESET_PEEK_BYTE(&CHECK_BYTE_QUEUE);
+                RESET_PEEK(MsgMapQueue,&CHECK_BYTE_QUEUE);
                 s_tState = TASK_CHECK_USE_PEEK_SEARCH;
             }
             break;
@@ -191,7 +163,7 @@ fsm_rt_t MsgMapSearch(const msg_t **ptSuccessMsg)
                 s_chMsgIndex++;
                 s_tState = TASK_CHECK_USE_PEEK_USER_CHK_STR;
             } else {
-                DEQUEUE_BYTE(&CHECK_BYTE_QUEUE,&chByte);
+                DEQUEUE(MsgMapQueue,&CHECK_BYTE_QUEUE,&chByte);
                 s_chMsgIndex = 0;
                 s_tState = TASK_CHECK_USE_PEEK_SEARCH;
             }
@@ -200,12 +172,12 @@ fsm_rt_t MsgMapSearch(const msg_t **ptSuccessMsg)
         case TASK_CHECK_USE_PEEK_USER_CHK_STR:
             tRes = CheckEngine(c_ptMsg,&bIsCheckFail);
             if(tRes == fsm_rt_cpl) {
-                GET_ALL_PEEKED_BYTE(&CHECK_BYTE_QUEUE);
+                GET_ALL_PEEK(MsgMapQueue,&CHECK_BYTE_QUEUE);
                 *ptSuccessMsg = c_ptMsg;
                 TASK_CHECK_USE_PEEK_FSM_RESET();
                 return fsm_rt_cpl;
             } else if (bIsCheckFail) {
-                RESET_PEEK_BYTE(&CHECK_BYTE_QUEUE);
+                RESET_PEEK(MsgMapQueue,&CHECK_BYTE_QUEUE);
                 s_tState = TASK_CHECK_USE_PEEK_USER_SEARCH;
             }
             break;
@@ -251,86 +223,4 @@ static fsm_rt_t CheckEngine(const msg_t *ptMSG,bool* pbIsCheckFail)
     }
     
     return fsm_rt_on_going;
-}
-
-
-
-#define CHECK_STR_FSM_RESET() do {ptCHK->tState = CHECK_STR_START;}while(0)
-static fsm_rt_t check_string(check_str_t *ptCHK, bool *pbIsRequestDrop)
-{
-    static uint8_t chByte = 0;
-    
-    if( (NULL == ptCHK) || (NULL == pbIsRequestDrop) ){ 
-        return fsm_rt_err;
-    }
-    
-    switch(ptCHK->tState){
-        case CHECK_STR_START:
-            if(NULL == ptCHK->pchSTR) {
-                return fsm_rt_err;
-            } else {
-                ptCHK->pchIndex = ptCHK->pchSTR;
-                ptCHK->tState = CHECK_SRT_CHECK;
-            }
-            //break;
-            
-        case CHECK_SRT_CHECK:
-            if(PEEK_BYTE_QUEUE(ptCHK->ptQueue,&chByte)) {
-                *pbIsRequestDrop = true;
-                if(chByte == *(ptCHK->pchIndex)) {
-                    if('\0' == *(++(ptCHK->pchIndex))){
-                        CHECK_STR_FSM_RESET();
-                        return fsm_rt_cpl;
-                    }
-                    *pbIsRequestDrop = false;
-                } 
-            }
-            break;
-    }
-    
-    return fsm_rt_on_going;
-}
-
-static bool init_CHK_string(check_str_t *ptCHK,uint8_t* pchStr,byte_queue_t* ptQueue)
-{
-    if((NULL == ptCHK)||(NULL == pchStr)||(NULL == ptQueue)){
-        return false;
-    }
-    
-    ptCHK->pchSTR   = pchStr;
-    ptCHK->pchIndex = NULL;
-    ptCHK->tState   = CHECK_STR_START;
-    ptCHK->ptQueue  = ptQueue;
-
-    return true;
-}
-
-WEAK bool peek_byte_queue(byte_queue_t *ptQueue, uint8_t *pchObj)
-{    
-    if(NULL == ptQueue) {
-        return false;
-    }
-    return false;
-}
-
-WEAK bool get_all_peek_byte(byte_queue_t *ptQueue)
-{
-    if(NULL == ptQueue) {
-        return false;
-    }
-    return false;
-}
-WEAK bool reset_peek_byte(byte_queue_t *ptQueue)
-{
-    if(NULL == ptQueue) {
-        return false;
-    }
-    return false;
-}
-WEAK bool dequeue(byte_queue_t *ptQueue, uint8_t *ptObj)
-{
-    if(NULL == ptQueue) {
-        return false;
-    }
-    return false;
 }

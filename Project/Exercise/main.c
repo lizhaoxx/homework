@@ -7,7 +7,7 @@
 #include "src\event\event.h"
 #include "src\byte_queue\byte_queue.h"
 #include ".\src\MsgMap\MsgMap.h"
-
+#include ".\mapqueue.h"
 #define BYTE_QUE_BUF_LEN        16
 #define BYTE_PIPE_BUF_LEN       16
 
@@ -30,9 +30,10 @@ static fsm_rt_t task_a(void);
 static fsm_rt_t task_b(void);
 static fsm_rt_t task_c(void);
 
+// DEF_QUEUE(MsgMapQueue,uint8_t,uint8_t,ATOM_ACESS);
 
- byte_queue_t g_tFIFOin;
- byte_queue_t s_tFIFOout;
+ QUEUE(MsgMapQueue) g_tFIFOin;
+ QUEUE(MsgMapQueue) s_tFIFOout;
 
 static event_t s_tEventApple;
 static event_t s_tEventOrange;
@@ -55,8 +56,8 @@ int main(void)
     INIT_EVENT(&s_tEventOrange,false,MANUAL);
     INIT_EVENT(&s_tEventWorld,false,MANUAL);
     
-    INIT_BYTE_QUEUE(&g_tFIFOin,s_tBuf, UBOUND(s_tBuf));
-    INIT_BYTE_QUEUE(&s_tFIFOout,s_tPiPeBuf, UBOUND(s_tPiPeBuf));
+    QUEUE_INIT(MsgMapQueue,&g_tFIFOin,s_tBuf, UBOUND(s_tBuf));
+    QUEUE_INIT(MsgMapQueue,&s_tFIFOout,s_tPiPeBuf, UBOUND(s_tPiPeBuf));
     
     cmd_register(s_tUserMSGMap,UBOUND(s_tUserMSGMap));
     
@@ -148,7 +149,7 @@ static fsm_rt_t serial_in_task(void)
             //breka;
         case SERIAL_IN_TASK_READ:
             if(serial_in(&s_chByte)){
-                ENQUEUE_BYTE(&g_tFIFOin,s_chByte);
+                ENQUEUE(MsgMapQueue,&g_tFIFOin,s_chByte);
                 SERIAL_IN_TASK_FSM_RESET();
                 return fsm_rt_cpl;
             }
@@ -173,7 +174,7 @@ static fsm_rt_t serial_out_task(void)
             s_tState = SERIAL_OUT_TASK_READ_QUE;
             //breka;
         case SERIAL_OUT_TASK_READ_QUE:
-            if(DEQUEUE_BYTE(&s_tFIFOout,&s_chByte)){
+            if(DEQUEUE(MsgMapQueue,&s_tFIFOout,&s_chByte)){
                 s_tState = SERIAL_OUT_TASK_OUTPUT;
             }
             break;        

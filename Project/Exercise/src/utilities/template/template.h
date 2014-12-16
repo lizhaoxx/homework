@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright(C)2009-2012 by   xxxx xxxx<xxxxx@xxxxx.com>                 *
+ *   Copyright(C)2009-2012 by Gorgon Meducer<Embedded_zhuoran@hotmail.com> *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU Lesser General Public License as        *
@@ -16,79 +16,23 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
- 
+
+#ifndef _USE_TEMPLATE_H_
+#define _USE_TEMPLATE_H_
 
 /*============================ INCLUDES ======================================*/
-#include ".\app_cfg.h"
-#include "..\byte_queue\byte_queue.h"
+#include ".\t_queue.h"
 
 /*============================ MACROS ========================================*/
-#ifndef PEEK_BYTE_QUEUE
-    #error Macro PEEK_BYTE_QUEUE is not define for CheckStr.c !
-#endif
-
 /*============================ MACROFIED FUNCTIONS ===========================*/
 /*============================ TYPES =========================================*/
-typedef struct{
-    enum {
-        CHECK_STR_START = 0,
-        CHECK_SRT_CHECK
-    }tState;
-    uint8_t* pchSTR;
-    uint8_t* pchIndex;
-    byte_queue_t* ptQueue; 
-}check_str_t;
-
 /*============================ GLOBAL VARIABLES ==============================*/
 /*============================ LOCAL VARIABLES ===============================*/
 /*============================ PROTOTYPES ====================================*/
-#define CHECK_STR_FSM_RESET() do {ptCHK->tState = CHECK_STR_START;}while(0)
-fsm_rt_t check_string(check_str_t *ptCHK, bool *pbIsRequestDrop)
-{
-    uint8_t chByte = 0;
-    
-    if( (NULL == ptCHK) || (NULL == pbIsRequestDrop) ){ 
-        return fsm_rt_err;
-    }
-    
-    switch(ptCHK->tState){
-        case CHECK_STR_START:
-            if(NULL == ptCHK->pchSTR) {
-                return fsm_rt_err;
-            } else {
-                ptCHK->pchIndex = ptCHK->pchSTR;
-                ptCHK->tState = CHECK_SRT_CHECK;
-            }
-            //break;
-            
-        case CHECK_SRT_CHECK:
-            if(PEEK_BYTE_QUEUE(ptCHK->ptQueue,&chByte)) {
-                *pbIsRequestDrop = true;
-                if(chByte == *(ptCHK->pchIndex)) {
-                    if('\0' == *(++(ptCHK->pchIndex))){
-                        CHECK_STR_FSM_RESET();
-                        return fsm_rt_cpl;
-                    }
-                    *pbIsRequestDrop = false;
-                } 
-            }
-            break;
-    }
-    
-    return fsm_rt_on_going;
-}
+/*============================ IMPLEMENTATION ================================*/
 
-bool init_CHK_string(check_str_t *ptCHK,uint8_t* pchStr,byte_queue_t* ptQueue)
-{
-    if((NULL == ptCHK)||(NULL == pchStr)||(NULL == ptQueue)){
-        return false;
-    }
-    
-    ptCHK->pchSTR   = pchStr;
-    ptCHK->pchIndex = NULL;
-    ptCHK->tState   = CHECK_STR_START;
-    ptCHK->ptQueue  = ptQueue;
 
-    return true;
-}
 
+
+
+#endif

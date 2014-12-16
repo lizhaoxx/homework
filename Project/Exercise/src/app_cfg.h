@@ -35,7 +35,12 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __USE_SERVICE_APP_CFG_H__
 
 /*============================ INCLUDES ======================================*/
+#include ".\utilities\template\template.h"
+
 /*============================ MACROS ========================================*/
+
+EXTERN_QUEUE(MsgMapQueue,uint8_t,uint8_t);
+
 #define INSERT_MSG_MAP_FUNC_EXRERN                                          \
     extern bool msg_apple_handler(const msg_t *ptMSG);                      \
     extern bool msg_orange_handler(const msg_t *ptMSG);                     \
@@ -46,7 +51,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                         {"hello", &msg_hello_handler},
                         
 #define CHECK_BYTE_QUEUE  g_tFIFOin
-#define QUEUE_TYPE       byte_queue_t    
                         
 /*============================ MACROFIED FUNCTIONS ===========================*/
 #define SERIAL_OUT_HANDLE(__PCH)   serial_out(__PCH)

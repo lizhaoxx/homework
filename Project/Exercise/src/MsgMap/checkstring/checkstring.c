@@ -17,23 +17,11 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
  
-//! \note do not move this pre-processor statement to other places
-#include ".\app_cfg.h"
-
-#ifndef __CHECK_STRING_H__
-#define __CHECK_STRING_H__
-
 
 /*============================ INCLUDES ======================================*/
-#include "..\byte_queue\byte_queue.h"
+#include ".\app_cfg.h"
 
 /*============================ MACROS ========================================*/
-#define CHECK_STRING(__STRCONFIG,__BOOL)                                        \
-        check_string((__STRCONFIG),(__BOOL))
-        
-#define INIT_CHK_STRING(__STRCONFIG,__PSRT,__PTQUE)                             \
-        init_CHK_string((__STRCONFIG),(__PSRT),(__PTQUE))
-
 /*============================ MACROFIED FUNCTIONS ===========================*/
 /*============================ TYPES =========================================*/
 typedef struct{
@@ -43,14 +31,59 @@ typedef struct{
     }tState;
     uint8_t* pchSTR;
     uint8_t* pchIndex;
-    byte_queue_t* ptQueue; 
+    QUEUE(MsgMapQueue)* ptQueue; 
 }check_str_t;
 
 /*============================ GLOBAL VARIABLES ==============================*/
 /*============================ LOCAL VARIABLES ===============================*/
 /*============================ PROTOTYPES ====================================*/
-extern fsm_rt_t check_string(check_str_t *ptCHK, bool *pbIsRequestDrop);
-extern bool init_CHK_string(check_str_t *ptCHK,uint8_t* pchStr,byte_queue_t* ptQueue);
+#define CHECK_STR_FSM_RESET() do {ptCHK->tState = CHECK_STR_START;}while(0)
+fsm_rt_t check_string(check_str_t *ptCHK, bool *pbIsRequestDrop)
+{
+    uint8_t chByte = 0;
+    
+    if( (NULL == ptCHK) || (NULL == pbIsRequestDrop) ){ 
+        return fsm_rt_err;
+    }
+    
+    switch(ptCHK->tState){
+        case CHECK_STR_START:
+            if(NULL == ptCHK->pchSTR) {
+                return fsm_rt_err;
+            } else {
+                ptCHK->pchIndex = ptCHK->pchSTR;
+                ptCHK->tState = CHECK_SRT_CHECK;
+            }
+            //break;
+            
+        case CHECK_SRT_CHECK:
+            if(PEEK_QUEUE(MsgMapQueue,ptCHK->ptQueue,&chByte)) {
+                *pbIsRequestDrop = true;
+                if(chByte == *(ptCHK->pchIndex)) {
+                    if('\0' == *(++(ptCHK->pchIndex))){
+                        CHECK_STR_FSM_RESET();
+                        return fsm_rt_cpl;
+                    }
+                    *pbIsRequestDrop = false;
+                } 
+            }
+            break;
+    }
+    
+    return fsm_rt_on_going;
+}
 
-#endif
+bool init_CHK_string(check_str_t *ptCHK,uint8_t* pchStr,QUEUE(MsgMapQueue)* ptQueue)
+{
+    if((NULL == ptCHK)||(NULL == pchStr)||(NULL == ptQueue)){
+        return false;
+    }
+    
+    ptCHK->pchSTR   = pchStr;
+    ptCHK->pchIndex = NULL;
+    ptCHK->tState   = CHECK_STR_START;
+    ptCHK->ptQueue  = ptQueue;
+
+    return true;
+}
 

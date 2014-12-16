@@ -16,95 +16,41 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
-
+ 
 //! \note do not move this pre-processor statement to other places
+#include ".\app_cfg.h"
 
-#ifndef __BYTE_P_APP_CFG_H__
-#define __BYTE_P_APP_CFG_H__
+#ifndef __CHECK_STRING_H__
+#define __CHECK_STRING_H__
+
 
 /*============================ INCLUDES ======================================*/
-#include <stdint.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
-#include "stm32f10x.h"
-
-// #include ".\src\MsgMap\MsgMap.h"
-// #include ".\src\Queue\queue.h"
-// #include ".\src\CheckString\CheckStr.h"
+//#include "..\byte_queue\byte_queue.h"
 
 /*============================ MACROS ========================================*/
-// #define  ENABLED                0
-// #define  DISABLE                1
+#define CHECK_STRING(__STRCONFIG,__BOOL)                                        \
+        check_string((__STRCONFIG),(__BOOL))
+        
+#define INIT_CHK_STRING(__STRCONFIG,__PSRT,__PTQUE)                             \
+        init_CHK_string((__STRCONFIG),(__PSRT),(__PTQUE))
 
 /*============================ MACROFIED FUNCTIONS ===========================*/
 /*============================ TYPES =========================================*/
-#define  BYTE_QUEUE             ENABLED
+typedef struct{
+    enum {
+        CHECK_STR_START = 0,
+        CHECK_SRT_CHECK
+    }tState;
+    uint8_t* pchSTR;
+    uint8_t* pchIndex;
+    QUEUE(MsgMapQueue)* ptQueue;
+}check_str_t;
 
-#define  MSGMAP             ENABLED
-
-
-#define UBOUND(__Array__)       ( sizeof(__Array__)/sizeof(__Array__[0]) )
-
-//! @{
-typedef enum {
-    fsm_rt_err          = -1,    //!< fsm error, error code can be get from other interface
-    fsm_rt_cpl          = 0,     //!< fsm complete
-    fsm_rt_on_going     = 1,     //!< fsm on-going
-} fsm_rt_t;
-//! @}
-#define WEAK                    __attribute__((weak))
-
-
-#define CLASS(__NAME)               __##__NAME
-
-#define DEF_CLASS(__NAME,...)\
-    typedef union __NAME __NAME;\
-    __VA_ARGS__\
-    typedef struct __##__NAME __##__NAME;\
-    struct __##__NAME {
-
-#define END_DEF_CLASS(__NAME) \
-    };\
-    union __NAME {\
-        uint_fast8_t chMask[(sizeof(__##__NAME) + sizeof(uint_fast8_t) - 1) / sizeof(uint_fast8_t)];\
-    };
-#define EXTERN_CLASS(__NAME,...) \
-    typedef union __NAME __NAME;\
-    __VA_ARGS__\
-    union __NAME {\
-        uint_fast8_t chMask[(sizeof(struct {
-
-#define END_EXTERN_CLASS(__NAME) \
-        }) + sizeof(uint_fast8_t) - 1) / sizeof(uint_fast8_t)];\
-    };
-    
-# define ENABLE_GLOBAL_INTERRUPT()   
-
-# define DISABLE_GLOBAL_INTERRUPT()    
-
-
-# define ATOM_ACESS(__CODE)      {\
-                DISABLE_GLOBAL_INTERRUPT();\
-                __CODE;\
-                ENABLE_GLOBAL_INTERRUPT();\
-            }
-
-
-
-
-
-
-typedef unsigned          char uint8_t;
-typedef unsigned short     int uint16_t;
-typedef unsigned           int uint32_t;
-typedef unsigned       __int64 uint64_t;
- 
 /*============================ GLOBAL VARIABLES ==============================*/
 /*============================ LOCAL VARIABLES ===============================*/
 /*============================ PROTOTYPES ====================================*/
+extern fsm_rt_t check_string(check_str_t *ptCHK, bool *pbIsRequestDrop);
+extern bool init_CHK_string(check_str_t *ptCHK,uint8_t* pchStr,QUEUE(MsgMapQueue)* ptQueue);
 
 #endif
-/* EOF */
 
