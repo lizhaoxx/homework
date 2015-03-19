@@ -169,7 +169,29 @@ static fsm_rt_t console_print(const uint8_t *pchBuf,uint8_t chNum)
     return fsm_rt_on_going;
 }
 
+uint8_t chFunKeyCode[] = {0x5b,0x4b, 0x41,0x42,0x43,0x44,0x41,0x52,0x53,0x54};
 
+fsm_rt_rt check_func_key(uint8_t chKeyTemp,uint8_t *pchKeyCode)
+{
+    static uint8_t s_chIndex ;
+    
+    switch(s_tState) {
+        case START:
+            s_chIndex = 0;
+        case FIRST_:
+            do {
+                if( chKeyTemp == chFunKeyCode[s_chIndex]) {
+                 
+                 
+                }
+            } while(s_chIndex++ < 2);
+            break;
+        case SECOND:
+            break;
+     
+    }
+ 
+}
 
 
 
