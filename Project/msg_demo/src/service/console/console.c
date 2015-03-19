@@ -176,21 +176,44 @@ fsm_rt_rt check_func_key(uint8_t chKeyTemp,uint8_t *pchKeyCode)
     static uint8_t s_chIndex ;
     
     switch(s_tState) {
-        case START:
+        case FUNC_KEY_CHECK_START:
             s_chIndex = 0;
-        case FIRST_:
+            s_tState = FUNC_KEY_CHECK_FIRST;
+            //break;
+        case FUNC_KEY_CHECK_FIRST:
             do {
                 if( chKeyTemp == chFunKeyCode[s_chIndex]) {
-                 
-                 
+                  s_tState = FUNC_KEY_CHECK_SECOND;
+                  s_chIndex = 2 + 1 << s_chIndex ;
+                  break;
                 }
             } while(s_chIndex++ < 2);
+            s_chIndex = 0;
             break;
-        case SECOND:
+            
+        case FUNC_KEY_CHECK_SECOND:{
+            uint8_t chIndex = 0;
+            do {
+                if( chKeyTemp == chFunKeyCode[s_chIndex]) {
+                 *pchKeyCode = s_chIndex;
+                  return fsm_rt_cpl;
+                  break;
+                }
+                s_chIndex += chIndex;
+            } while(chIndex++ < 4);
             break;
-     
+            
+        case FUNC_KEY_CHECK_FAIL:
+            FUNC_KEY_CHECK_RESET();
+            RESET_PEEK();
+            DEQUEUE();
+            *pchKeyCode = KEY_ESC;
+            //realse_s;
+            return fsm_rt_cpl;
+        }
     }
- 
+    
+    return fsm_rt_on_going;
 }
 
 
